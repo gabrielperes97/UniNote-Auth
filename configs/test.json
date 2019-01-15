@@ -1,0 +1,7 @@
+{
+    "DBHost" : "mongodb://127.0.0.1:27017/tests",
+    "port" : 3001,
+    "jwtSecret" : "MyS3cr3tK3Y",
+    "jwtSession" : {"session": false},
+    "authServer" : "127.0.0.1:3000"
+}

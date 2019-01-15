@@ -1,0 +1,29 @@
+{
+  "name": "uninote-notes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start_test": "NODE_ENV=test node server.js",
+    "test": "NODE_ENV=test mocha --timeout 3000"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.3",
+    "body-parser": "^1.18.3",
+    "consign": "^0.1.6",
+    "express": "^4.16.3",
+    "jwt-simple": "^0.5.5",
+    "mongoose": "^5.2.5",
+    "morgan": "^1.9.0",
+    "superagent": "^4.1.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^4.0.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.3"
+  }
+}
