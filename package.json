@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "start_test": "NODE_ENV=test node server.js",
-    "test": "NODE_ENV=test mocha --timeout 3000"
+    "test": "NODE_ENV=test mocha --timeout 3000 --exit"
   },
   "author": "",
   "license": "ISC",

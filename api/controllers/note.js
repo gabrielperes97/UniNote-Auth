@@ -67,17 +67,16 @@ exports.update_a_note = function (req, res) {
 
     Note.findOne({_id: req.params.noteId, user: req.user._id}, (err, note) => {
             if (err)
-                res.json({ success: false, message: err, _id: req.params.noteId});
+                res.json({ success: false, message: "Note id not found", _id: req.params.noteId});
             else {
                 for (let [key, val] of Object.entries(req.body)){
-                    //console.log(key, val)
                     note[key] = val;
                 }
 
                 note.save((err, new_note) => {
                     if (err)
                     {
-                        res.json({ success: false, message: err, _id: req.params.noteId});
+                        res.json({ success: false, message: err.message, _id: req.params.noteId});
                     }
                     else
                     {
@@ -122,7 +121,7 @@ exports.get_notes = function (req, res) {
         Note.findOne({_id: obj._id, user: req.user._id}).exec((err, note) => {
             if (err)
             {
-                done({success: false, message: "on get_notes error", _id: req.user._id}, i)
+                done({success: false, message: "Note id not found", _id: obj._id}, i)
             }
             else
             {
@@ -134,7 +133,7 @@ exports.get_notes = function (req, res) {
                 }
                 else
                 {
-                    done({success: false, message: "Note not found", _id: req.user._id}, i)
+                    done({success: false, message: "Note id not found", _id: obj._id}, i)
                 }
             }
             
@@ -163,7 +162,7 @@ exports.update_notes = function (req, res) {
 
             if (err)
             {
-                done({success: false, message: "Failed to found note", _id: note_req._id}, i)
+                done({success: false, message: "Note id not found", _id: note_req._id}, i)
             }
             else
             {
@@ -204,7 +203,16 @@ exports.delete_notes = function (req, res) {
     }
 
     req.body.forEach((note_to_delete, i) => {
-        Note.findOneAndRemove({_id: note_to_delete._id, user: req.user.id}).exec((err, user) => {
+        Note.findOneAndDelete({_id: note_to_delete._id, user: req.user._id}, (err, note) => {
+            if (err)
+                if (err.name == "CastError" && err.kind == "ObjectId")
+                    done({ success: false, message: "Note id not found", _id: note_to_delete._id }, i);
+                else
+                    done({ success: false, message: "On delete error", _id: note_to_delete._id }, i);          
+            else
+                done({ success: true, message: 'Note remove succefully', _id: note.id }, i);
+        });
+        /*Note.findOneAndRemove({$and: [{user: req.user.id}, {_id: note_to_delete._id}]}, (err, user) => {
             if (err)
             {
                 done({success: false, message: "Note id not found", _id: note_to_delete._id}, i)
@@ -213,7 +221,17 @@ exports.delete_notes = function (req, res) {
             {
                 done({success: true, message: "Remove successfully", _id: note_to_delete._id}, i)
             }
-        });
+        });*/
+        /*Note.findOneAndRemove({_id: note_to_delete._id, user: req.user.id}).exec((err, user) => {
+            if (err)
+            {
+                done({success: false, message: "Note id not found", _id: note_to_delete._id}, i)
+            }
+            else
+            {
+                done({success: true, message: "Remove successfully", _id: note_to_delete._id}, i)
+            }
+        });*/
     });
 
 }

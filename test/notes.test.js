@@ -569,9 +569,9 @@ describe("Notes", () => {
                         res.body.should.be.a("array");
                         res.body.length.should.be.eql(3);
 
-                        notes_before[0].title = update[0].title;
-                        notes_before[1].content = update[1].content;
-                        notes_before[2].background_color = update[2].background_color;
+                        notes[0].title = update[0].title;
+                        notes[1].content = update[1].content;
+                        notes[2].background_color = update[2].background_color;
 
                         var steps = 0;
                         function step()
@@ -582,7 +582,7 @@ describe("Notes", () => {
                         }
 
                         res.body.forEach((note, i) => {
-                            let before = notes_before[i]
+                            let before = notes[i]
                             Note.findById(note._id).exec((err, new_note) => {
                                 note.should.have.property('success').eql(true);
                                 note.should.have.property('_id').eql(note._id);
@@ -634,32 +634,48 @@ describe("Notes", () => {
                         res.body.should.be.a("array");
                         res.body.length.should.be.eql(3);
 
-                        notes_before[0].title = update[0].title;
-                        notes_before[1].content = update[1].content;
-                        notes_before[2].background_color = update[2].background_color;
+                        notes[0].title = update[0].title;
+                        notes[1].content = update[1].content;
+                        notes[2].background_color = update[2].background_color;
 
-                        User.findById(user.id).exec((err, new_user) => {
-                            for (var i = 0; i < 2; i++) {
-                                res.body[i].should.have.property('success').eql(true);
-                                res.body[i].should.have.property('_id').eql(update[i]._id);
-                                res.body[i].should.have.property('title').eql(notes_before[i].title);
-                                res.body[i].should.have.property('content').eql(notes_before[i].content); //Updated field
-                                res.body[i].should.have.property('background_color').eql(notes_before[i].background_color);
-                                res.body[i].should.have.property('font_color').eql(notes_before[i].font_color);
-                                res.body[i].should.have.property('created_date');
-                                res.body[i].should.have.property('last_update');
-                                
-                                note = new_user.notes.id(update[i]._id);
-                                note.id.should.be.eql(update[i]._id);
-                                note.title.should.be.eql(notes_before[i].title);
-                                note.content.should.be.eql(notes_before[i].content);
-                                note.background_color.should.be.eql(notes_before[i].background_color);
-                                note.font_color.should.be.eql(notes_before[i].font_color);
+                        var steps = 0;
+                        function step()
+                        {
+                            steps++;
+                            if (steps == 3)
+                                done();
+                        }
+
+                        res.body.forEach((note, i) => {
+                            let before = notes[i]
+                            if (i < 2)
+                            {
+                                Note.findById(note._id).exec((err, new_note) => {
+                                    note.should.have.property('success').eql(true);
+                                    note.should.have.property('_id').eql(update[i]._id.toString());
+                                    if (note.title != before.title)
+                                        console.log("Failed")
+                                    note.should.have.property('title').eql(before.title);
+                                    note.should.have.property('content').eql(before.content); //Updated field
+                                    note.should.have.property('background_color').eql(before.background_color);
+                                    note.should.have.property('font_color').eql(before.font_color);
+                                    note.should.have.property('created_date');
+                                    note.should.have.property('last_update');
+
+                                    new_note.id.should.be.eql(note._id);
+                                    new_note.title.should.be.eql(before.title);
+                                    new_note.content.should.be.eql(before.content);
+                                    new_note.background_color.should.be.eql(before.background_color);
+                                    new_note.font_color.should.be.eql(before.font_color);
+                                    step();
+                                });
+                            }else
+                            {
+                                res.body[2].should.have.property('success').eql(false);
+                                res.body[2].should.have.property('_id').eql(update[2]._id);
+                                res.body[2].should.have.property('message').eql("Note id not found");
+                                step();
                             }
-                            res.body[2].should.have.property('success').eql(false);
-                            res.body[2].should.have.property('_id').eql(update[2]._id);
-                            res.body[2].should.have.property('message').eql("Note id not found");
-                            done();
                         });
                     });
             }); 
@@ -694,9 +710,9 @@ describe("Notes", () => {
                         res.body.should.be.a("array");
                         res.body.length.should.be.eql(3);
 
-                        notes_before[0].title = update[0].title;
-                        notes_before[1].content = update[1].content;
-                        notes_before[2].background_color = update[2].background_color;
+                        notes[0].title = update[0].title;
+                        notes[1].content = update[1].content;
+                        notes[2].background_color = update[2].background_color;
 
                         var steps = 0;
                         function step()
@@ -707,7 +723,7 @@ describe("Notes", () => {
                         }
 
                         res.body.forEach((note, i) => {
-                            let before = notes_before[i]
+                            let before = notes[i]
                             Note.findById(note._id).exec((err, new_note) => {
                                 note.should.have.property('success').eql(true);
                                 note.should.have.property('_id').eql(note._id);
@@ -748,6 +764,14 @@ describe("Notes", () => {
                     }
                 ];
 
+                var i = 0;
+                function step()
+                {
+                    i++;
+                    if (i == 2)
+                        done();
+                }
+
                 chai.request(server)
                     .delete("/notes")
                     .set("authorization", token)
@@ -756,14 +780,14 @@ describe("Notes", () => {
                         res.should.have.status(200);
                         res.body.should.be.a('array');
                         res.body.length.should.be.eql(2);
-                        for (var i = 0; i < 1; i++) {
+                        for (var i = 0; i < 2; i++) {
                             res.body[i].should.have.property('success').eql(true);
                             res.body[i].should.have.property('_id').eql(notes_to_delete[i]._id);
+                            Note.findById(notes_to_delete[i]._id).exec((err, new_note) => {
+                                should.not.exist(new_note);
+                                step();
+                            });
                         }
-                        User.find({$or: [{_id: notes_to_delete[0]._id}, {_id: notes_to_delete[1]._id} ]}).exec((err, founded_users) => {
-                            founded_users.length.should.be.eql(0);
-                            done();
-                        });
                     });
             });
         });

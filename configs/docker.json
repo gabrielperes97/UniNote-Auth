@@ -2,5 +2,6 @@
     "DBHost" : "mongodb://mongo:27017/UniNote",
     "port" : 3000,
     "jwtSecret" : "MyS3cr3tK3Y",
-    "jwtSession" : {"session": false}
+    "jwtSession" : {"session": false},
+    "auth_server" : "http://127.0.0.1:3000"
 }
